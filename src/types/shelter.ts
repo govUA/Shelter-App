@@ -3,6 +3,7 @@ export interface Feedback {
     user: string;
     rating: number;
     comment: string;
+    imageUrl?: string;
 }
 
 export interface Shelter {

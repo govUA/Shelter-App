@@ -20,7 +20,7 @@ const BombShelterApp: React.FC = () => {
 
     return (
         <div style={containerStyle}>
-            <h1 style={appTitleStyle}>Укриття Києва</h1>
+            <h1 style={appTitleStyle}>Kyiv Bomb Shelters</h1>
 
             {SHELTER_DATA.map(shelter => (
                 <ShelterInfoCard

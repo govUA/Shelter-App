@@ -1,7 +1,8 @@
-import React, { useState, CSSProperties } from 'react';
-import { MapPin } from 'lucide-react';
-import { Shelter } from '../types/shelter';
-import { StarRating } from './StarRating';
+import React, {useState, CSSProperties} from 'react';
+import {MapPin, Image as ImageIcon} from 'lucide-react';
+import {Shelter, Feedback} from '../types/shelter';
+import {StarRating} from './StarRating';
+import {addFeedbackToShelter} from '../data/shelters';
 
 const modalOverlayStyle: CSSProperties = {
     position: 'fixed',
@@ -114,6 +115,7 @@ interface ShelterDetailsModalProps {
 interface NewFeedback {
     rating: number;
     comment: string;
+    image?: File | null;
 }
 
 export const ShelterDetailsModal: React.FC<ShelterDetailsModalProps> = ({
@@ -122,13 +124,48 @@ export const ShelterDetailsModal: React.FC<ShelterDetailsModalProps> = ({
                                                                         }) => {
     const [newFeedback, setNewFeedback] = useState<NewFeedback>({
         rating: 0,
-        comment: ''
+        comment: '',
+        image: null
     });
+
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setNewFeedback(prev => ({...prev, image: file}));
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewImage(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const [feedbackMessage, setFeedbackMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
     const handleSubmitFeedback = (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Submitting Feedback:', newFeedback);
-        setNewFeedback({ rating: 0, comment: '' });
+
+        if (newFeedback.rating === 0 || newFeedback.comment.trim() === '') {
+            setFeedbackMessage({type: 'error', text: 'Please provide both a rating and a comment.'});
+            return;
+        }
+
+        const feedbackToSubmit: Omit<Feedback, 'id'> = {
+            user: 'Користувач',
+            rating: newFeedback.rating,
+            comment: newFeedback.comment,
+            imageUrl: previewImage ?? undefined
+        };
+
+        addFeedbackToShelter(shelter.id, feedbackToSubmit);
+
+        setNewFeedback({rating: 0, comment: '', image: null});
+        setPreviewImage(null);
+
+        setFeedbackMessage({type: 'success', text: 'Feedback submitted successfully!'});
     };
 
     return (
@@ -152,10 +189,10 @@ export const ShelterDetailsModal: React.FC<ShelterDetailsModalProps> = ({
                     />
                     <div style={shelterLocationStyle}>
                         <div style={shelterAddressStyle}>
-                            <MapPin size={20} style={{ marginRight: '0.5rem', color: '#4B5563' }} />
+                            <MapPin size={20} style={{marginRight: '0.5rem', color: '#4B5563'}}/>
                             <p>{shelter.address}</p>
                         </div>
-                        <StarRating rating={shelter.rating} />
+                        <StarRating rating={shelter.rating}/>
                     </div>
                     <p style={shelterDescriptionStyle}>{shelter.description}</p>
                 </div>
@@ -169,7 +206,7 @@ export const ShelterDetailsModal: React.FC<ShelterDetailsModalProps> = ({
                             <div key={feedback.id} style={feedbackListItemStyle}>
                                 <div style={feedbackHeaderStyle}>
                                     <p>{feedback.user}</p>
-                                    <StarRating rating={feedback.rating} />
+                                    <StarRating rating={feedback.rating}/>
                                 </div>
                                 <p>{feedback.comment}</p>
                             </div>
@@ -197,12 +234,52 @@ export const ShelterDetailsModal: React.FC<ShelterDetailsModalProps> = ({
                             placeholder="Share your experience with this shelter..."
                         />
                     </div>
-                    <button
-                        type="submit"
-                        style={feedbackSubmitButtonStyle}
-                    >
-                        Submit Feedback
-                    </button>
+                    <div style={{marginBottom: '0.5rem'}}>
+                        <label
+                            htmlFor="imageUpload"
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                cursor: 'pointer',
+                                marginBottom: '0.25rem'
+                            }}
+                        >
+                            <ImageIcon size={16} style={{marginRight: '0.5rem'}}/>
+                            Upload Image (Optional)
+                        </label>
+                        <input
+                            id="imageUpload"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            style={{display: 'none'}}
+                        />
+                        {previewImage && (
+                            <img
+                                src={previewImage}
+                                alt="Preview"
+                                style={{
+                                    maxWidth: '200px',
+                                    maxHeight: '200px',
+                                    marginTop: '0.5rem',
+                                    borderRadius: '0.25rem'
+                                }}
+                            />
+                        )}
+                    </div>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                        <button
+                            type="submit"
+                            style={feedbackSubmitButtonStyle}
+                        >
+                            Submit Feedback
+                        </button>
+                        {feedbackMessage && (
+                            <label style={{color: feedbackMessage.type === 'success' ? 'green' : 'red'}}>
+                                {feedbackMessage.text}
+                            </label>
+                        )}
+                    </div>
                 </form>
             </div>
         </div>
