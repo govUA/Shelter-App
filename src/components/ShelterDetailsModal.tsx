@@ -154,7 +154,7 @@ export const ShelterDetailsModal: React.FC<ShelterDetailsModalProps> = ({
         }
 
         const feedbackToSubmit: Omit<Feedback, 'id'> = {
-            user: 'Користувач',
+            user: 'User',
             rating: newFeedback.rating,
             comment: newFeedback.comment,
             imageUrl: previewImage ?? undefined
@@ -208,6 +208,13 @@ export const ShelterDetailsModal: React.FC<ShelterDetailsModalProps> = ({
                                     <p>{feedback.user}</p>
                                     <StarRating rating={feedback.rating}/>
                                 </div>
+                                {feedback.imageUrl !== undefined ? (
+                                    <img
+                                        src={feedback.imageUrl}
+                                        alt='Photo'
+                                        style={shelterImageStyle}
+                                    />
+                                ) : null}
                                 <p>{feedback.comment}</p>
                             </div>
                         ))
