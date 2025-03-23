@@ -45,7 +45,10 @@
   "dependencies": {
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
     "lucide-react": "^0.483.0",
+    "pg": "^8.14.1",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.4.0",
     "ts-loader": "^9.5.2"

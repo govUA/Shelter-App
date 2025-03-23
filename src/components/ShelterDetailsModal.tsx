@@ -1,8 +1,7 @@
-import React, {useState, CSSProperties} from 'react';
+import React, {useState, CSSProperties, useCallback} from 'react';
 import {MapPin, Image as ImageIcon} from 'lucide-react';
 import {Shelter, Feedback} from '../types/shelter';
 import {StarRating} from './StarRating';
-import {addFeedbackToShelter} from '../data/shelters';
 
 const modalOverlayStyle: CSSProperties = {
     position: 'fixed',
@@ -42,7 +41,9 @@ const modalTitleStyle: CSSProperties = {
 
 const modalCloseButtonStyle: CSSProperties = {
     color: '#EF4444',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    width: '2rem',
+    height: '2rem'
 };
 
 const shelterImageStyle: CSSProperties = {
@@ -110,6 +111,7 @@ const feedbackSubmitButtonStyle: CSSProperties = {
 interface ShelterDetailsModalProps {
     shelter: Shelter;
     onClose: () => void;
+    onFeedbackUpdate: (updatedShelter: Shelter) => void;
 }
 
 interface NewFeedback {
@@ -120,7 +122,8 @@ interface NewFeedback {
 
 export const ShelterDetailsModal: React.FC<ShelterDetailsModalProps> = ({
                                                                             shelter,
-                                                                            onClose
+                                                                            onClose,
+                                                                            onFeedbackUpdate
                                                                         }) => {
     const [newFeedback, setNewFeedback] = useState<NewFeedback>({
         rating: 0,
@@ -129,6 +132,12 @@ export const ShelterDetailsModal: React.FC<ShelterDetailsModalProps> = ({
     });
 
     const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const [feedbackMessage, setFeedbackMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+    const calculateNewAverageRating = useCallback((feedbackList: Feedback[]) => {
+        const totalRating = feedbackList.reduce((sum, feedback) => sum + feedback.rating, 0);
+        return Number((totalRating / feedbackList.length).toFixed(1));
+    }, []);
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -143,13 +152,14 @@ export const ShelterDetailsModal: React.FC<ShelterDetailsModalProps> = ({
         }
     };
 
-    const [feedbackMessage, setFeedbackMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-
-    const handleSubmitFeedback = (e: React.FormEvent) => {
+    const handleSubmitFeedback = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (newFeedback.rating === 0 || newFeedback.comment.trim() === '') {
-            setFeedbackMessage({type: 'error', text: 'Please provide both a rating and a comment.'});
+            setFeedbackMessage({
+                type: 'error',
+                text: 'Please provide both a rating and a comment.'
+            });
             return;
         }
 
@@ -160,13 +170,44 @@ export const ShelterDetailsModal: React.FC<ShelterDetailsModalProps> = ({
             imageUrl: previewImage ?? undefined
         };
 
-        addFeedbackToShelter(shelter.id, feedbackToSubmit);
+        try {
+            const response = await fetch(`http://localhost:5000/shelters/${shelter.id}/feedback`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(feedbackToSubmit)
+            });
 
-        setNewFeedback({rating: 0, comment: '', image: null});
-        setPreviewImage(null);
+            if (!response.ok) throw new Error('Failed to submit feedback');
 
-        setFeedbackMessage({type: 'success', text: 'Feedback submitted successfully!'});
+            const submittedFeedback = await response.json();
+
+            const updatedFeedback = [...shelter.feedback, submittedFeedback];
+            const newAverageRating = calculateNewAverageRating(updatedFeedback);
+
+            const updatedShelter: Shelter = {
+                ...shelter,
+                feedback: updatedFeedback,
+                rating: newAverageRating
+            };
+
+            onFeedbackUpdate(updatedShelter);
+
+            setNewFeedback({ rating: 0, comment: '', image: null });
+            setPreviewImage(null);
+            setFeedbackMessage({
+                type: 'success',
+                text: 'Feedback submitted successfully!'
+            });
+        } catch (error) {
+            console.error(error);
+            setFeedbackMessage({
+                type: 'error',
+                text: 'Error submitting feedback.'
+            });
+        }
     };
+
+
 
     return (
         <div style={modalOverlayStyle}>
@@ -177,7 +218,7 @@ export const ShelterDetailsModal: React.FC<ShelterDetailsModalProps> = ({
                         onClick={onClose}
                         style={modalCloseButtonStyle}
                     >
-                        Close
+                        ❌
                     </button>
                 </div>
 
@@ -204,10 +245,6 @@ export const ShelterDetailsModal: React.FC<ShelterDetailsModalProps> = ({
                     ) : (
                         shelter.feedback.map(feedback => (
                             <div key={feedback.id} style={feedbackListItemStyle}>
-                                <div style={feedbackHeaderStyle}>
-                                    <p>{feedback.user}</p>
-                                    <StarRating rating={feedback.rating}/>
-                                </div>
                                 {feedback.imageUrl !== undefined ? (
                                     <img
                                         src={feedback.imageUrl}
@@ -215,6 +252,10 @@ export const ShelterDetailsModal: React.FC<ShelterDetailsModalProps> = ({
                                         style={shelterImageStyle}
                                     />
                                 ) : null}
+                                <div style={feedbackHeaderStyle}>
+                                    <p>{feedback.user}</p>
+                                    <StarRating rating={feedback.rating}/>
+                                </div>
                                 <p>{feedback.comment}</p>
                             </div>
                         ))
