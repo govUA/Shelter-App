@@ -1,25 +1,6 @@
 import React, { useState } from 'react';
 import { Star } from 'lucide-react';
-
-const starRatingStyle = {
-    display: 'flex',
-    alignItems: 'center'
-};
-
-const starStyle = {
-    cursor: 'pointer',
-    marginRight: '0.25rem'
-};
-
-const editableStarStyle = {
-    ...starStyle,
-    transition: 'transform 0.2s ease'
-};
-
-const editableStarHoverStyle = {
-    ...editableStarStyle,
-    transform: 'scale(1.1)'
-};
+import styles from './StarRating.module.css';
 
 interface StarRatingProps {
     rating: number;
@@ -40,18 +21,24 @@ export const StarRating: React.FC<StarRatingProps> = ({
         }
     };
 
+    const getStarClassName = (star: number) => {
+        if (editable && star === hoverRating) {
+            return styles.editableStarHover;
+        } else if (editable) {
+            return styles.editableStar;
+        } else {
+            return styles.star;
+        }
+    };
+
     return (
-        <div style={starRatingStyle}>
+        <div className={styles.starRating}>
             {[1, 2, 3, 4, 5].map((star) => (
                 <Star
                     key={star}
                     color={star <= (hoverRating || rating) ? 'gold' : 'gray'}
                     fill={star <= (hoverRating || rating) ? 'gold' : 'none'}
-                    style={
-                        editable && star === hoverRating
-                            ? editableStarHoverStyle
-                            : (editable ? editableStarStyle : starStyle)
-                    }
+                    className={getStarClassName(star)}
                     onMouseEnter={() => editable && setHoverRating(star)}
                     onMouseLeave={() => editable && setHoverRating(0)}
                     onClick={() => handleRatingChange(star)}

@@ -2,18 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ShelterInfoCard, ShelterDetailsModal } from './components';
 import { fetchShelters } from './data/shelters';
 import { Shelter } from './types/shelter';
-
-const containerStyle = {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '1rem'
-};
-
-const appTitleStyle = {
-    fontSize: '2.25rem',
-    fontWeight: 'bold',
-    marginBottom: '1.5rem'
-};
+import styles from './App.module.css';
 
 const BombShelterApp: React.FC = () => {
     const [shelters, setShelters] = useState<Shelter[]>([]);
@@ -33,8 +22,8 @@ const BombShelterApp: React.FC = () => {
     };
 
     return (
-        <div style={containerStyle}>
-            <h1 style={appTitleStyle}>Kyiv Bomb Shelters</h1>
+        <div className={styles.container}>
+            <h1 className={styles.appTitle}>Kyiv Bomb Shelters</h1>
 
             {shelters.map(shelter => (
                 <ShelterInfoCard

@@ -1,0 +1,25 @@
+@font-face {
+    font-family: 'eukraine';
+    src: url('../public/eukraine.ttf') format('truetype');
+}
+
+body {
+    background-color: #5788BD;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+    background-color: #2F5991;
+}
+
+.appTitle {
+    font-size: 2.25rem;
+    font-weight: 1000;
+    font-family: 'eukraine', helvetica, serif;
+    margin-bottom: 1.5rem;
+    color: #5788BD;
+    -webkit-text-stroke-width: 0.0125rem;
+    -webkit-text-stroke-color: #FDFDFF;
+}

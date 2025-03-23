@@ -61,7 +61,7 @@ app.get('/shelters', async (req, res) => {
                                    json_build_object(
                                            'id', f.id,
                                            'shelter_id', f.shelter_id,
-                                           'user_name', f.user_name,
+                                           'user', f.user_name,
                                            'rating', f.rating,
                                            'comment', f.comment,
                                            'imageUrl', f.image_url
