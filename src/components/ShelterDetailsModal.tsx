@@ -163,18 +163,19 @@ export const ShelterDetailsModal: React.FC<ShelterDetailsModalProps> = ({
             return;
         }
 
-        const feedbackToSubmit: Omit<Feedback, 'id'> = {
-            user: 'User',
-            rating: newFeedback.rating,
-            comment: newFeedback.comment,
-            imageUrl: previewImage ?? undefined
-        };
+        const formData = new FormData();
+        formData.append('user', 'User');
+        formData.append('rating', newFeedback.rating.toString());
+        formData.append('comment', newFeedback.comment);
+
+        if (newFeedback.image) {
+            formData.append('image', newFeedback.image);
+        }
 
         try {
-            const response = await fetch(`http://localhost:5000/shelters/${shelter.id}/feedback`, {
+            const response = await fetch(`http:localhost:5000/shelters/${shelter.id}/feedback`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(feedbackToSubmit)
+                body: formData
             });
 
             if (!response.ok) throw new Error('Failed to submit feedback');
@@ -245,10 +246,10 @@ export const ShelterDetailsModal: React.FC<ShelterDetailsModalProps> = ({
                     ) : (
                         shelter.feedback.map(feedback => (
                             <div key={feedback.id} style={feedbackListItemStyle}>
-                                {feedback.imageUrl !== undefined ? (
+                                {feedback.imageUrl ? (
                                     <img
-                                        src={feedback.imageUrl}
-                                        alt='Photo'
+                                        src={`http://localhost:5000${feedback.imageUrl}`}
+                                        alt="Feedback Photo"
                                         style={shelterImageStyle}
                                     />
                                 ) : null}
