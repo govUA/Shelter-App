@@ -173,7 +173,7 @@ export const ShelterDetailsModal: React.FC<ShelterDetailsModalProps> = ({
         }
 
         try {
-            const response = await fetch(`http:localhost:5000/shelters/${shelter.id}/feedback`, {
+            const response = await fetch(`http://localhost:5000/shelters/${shelter.id}/feedback`, {
                 method: 'POST',
                 body: formData
             });
@@ -182,7 +182,7 @@ export const ShelterDetailsModal: React.FC<ShelterDetailsModalProps> = ({
 
             const submittedFeedback = await response.json();
 
-            const updatedFeedback = [...shelter.feedback, submittedFeedback];
+            const updatedFeedback = [...shelter.feedback, {...submittedFeedback, imageUrl: submittedFeedback.image_url}];
             const newAverageRating = calculateNewAverageRating(updatedFeedback);
 
             const updatedShelter: Shelter = {
