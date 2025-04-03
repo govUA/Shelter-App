@@ -1,0 +1,162 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    z-index: 1000;
+}
+
+.modalContent {
+    background-color: white;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    max-width: 42rem;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.modalTitle {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.modalCloseButton {
+    color: #EF4444;
+    font-weight: bold;
+    width: 2rem;
+    height: 2rem;
+}
+
+.shelterImage {
+    width: 100%;
+    height: 16rem;
+    object-fit: cover;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.shelterLocation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.shelterAddress {
+    display: flex;
+    align-items: center;
+}
+
+.shelterDescription {
+    margin-top: 0.5rem;
+}
+
+.feedbackImage {
+    width: 100%;
+    height: 16rem;
+    object-fit: contain;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.feedbackSection {
+    margin-bottom: 1rem;
+}
+
+.feedbackTitle {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.feedbackListItem {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 0.5rem 0;
+}
+
+.feedbackHeader {
+    display: flex;
+    justify-content: space-between;
+}
+
+.feedbackForm {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 1rem;
+}
+
+.feedbackInput {
+    width: 100%;
+    border: 1px solid #e0e0e0;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+}
+
+.feedbackSubmitButton {
+    background-color: #22C55E;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+}
+
+.mapPinIcon {
+    margin-right: 0.5rem;
+    color: #4B5563;
+}
+
+.formGroup {
+    margin-bottom: 0.5rem;
+}
+
+.formLabel {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.imageUploadLabel {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 0.25rem;
+}
+
+.imageIcon {
+    margin-right: 0.5rem;
+}
+
+.hidden {
+    display: none;
+}
+
+.previewImage {
+    max-width: 200px;
+    max-height: 200px;
+    margin-top: 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.feedbackActions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.successMessage {
+    color: green;
+}
+
+.errorMessage {
+    color: red;
+}

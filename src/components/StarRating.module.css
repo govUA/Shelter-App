@@ -1,0 +1,22 @@
+.starRating {
+    display: flex;
+    align-items: center;
+}
+
+.star {
+    cursor: pointer;
+    margin-right: 0.25rem;
+}
+
+.editableStar {
+    cursor: pointer;
+    margin-right: 0.25rem;
+    transition: transform 0.2s ease;
+}
+
+.editableStarHover {
+    cursor: pointer;
+    margin-right: 0.25rem;
+    transition: transform 0.2s ease;
+    transform: scale(1.1);
+}
